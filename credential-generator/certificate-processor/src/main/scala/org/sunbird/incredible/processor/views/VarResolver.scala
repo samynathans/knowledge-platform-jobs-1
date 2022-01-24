@@ -84,6 +84,7 @@ class VarResolver(certificateExtension: CertificateExtension) {
         put(JsonKeys.SIGNATORY_1_DESIGNATION, urlEncode(getSignatory1Designation))
         put(JsonKeys.EXPIRY_DATE, urlEncode(getExpiryDate))
         put(JsonKeys.ISSUER_NAME, urlEncode(getIssuerName))
+        put(JsonKeys.RM_NUMBER, urlEncode(getRmNumber))
       }
     }
     metaData

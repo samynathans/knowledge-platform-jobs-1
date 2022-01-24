@@ -96,4 +96,6 @@ class VarResolver(certificateExtension: CertificateExtension) {
     else data
   }
 
+  def getRmNumber: String = certificateExtension.rmNumber.get
+
 }

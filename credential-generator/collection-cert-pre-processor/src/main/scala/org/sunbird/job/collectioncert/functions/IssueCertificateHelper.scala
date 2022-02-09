@@ -180,7 +180,7 @@ trait IssueCertificateHelper {
         val profileDetails : Map[String, AnyRef] = userDetails.getOrElse("profileDetails", "").asInstanceOf[Map[String, AnyRef]]
         val profileReq : Map[String, AnyRef] = profileDetails.getOrElse("profileReq", "").asInstanceOf[Map[String, AnyRef]]
         val personalDetails : Map[String, AnyRef] = profileReq.getOrElse("personalDetails", "").asInstanceOf[Map[String, AnyRef]]
-        val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "").asInstanceOf[String]).getOrElse(null)
+        val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
         val eData = Map[String, AnyRef] (
             "issuedDate" -> dateFormatter.format(enrolledUser.issuedOn),
             "data" -> List(Map[String, AnyRef]("recipientName" -> recipientName, "recipientId" -> event.userId)),

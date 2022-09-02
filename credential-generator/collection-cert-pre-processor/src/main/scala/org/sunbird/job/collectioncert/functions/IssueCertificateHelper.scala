@@ -181,11 +181,11 @@ trait IssueCertificateHelper {
         val profileReq : Map[String, AnyRef] = profileDetails.getOrElse("profileReq", "").asInstanceOf[Map[String, AnyRef]]
         val personalDetails : Map[String, AnyRef] = profileReq.getOrElse("personalDetails", "").asInstanceOf[Map[String, AnyRef]]
         val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
-        var orgName: String = ""
+        var orgName = None: Option[String]
         if (!professionalDetails.isEmpty) {
             val organizationDetails: Option[Map[String, AnyRef]] = professionalDetails.lift(0)
             if (!organizationDetails.isEmpty) {
-                orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String]).getOrElse("")
+                orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String])
             }
         }
         var address = Array[String]()

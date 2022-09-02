@@ -60,4 +60,9 @@ class Event(eventMap: java.util.Map[String, Any], partition: Int, offset: Long) 
 
   def rmNumber: String = readOrDefault[String]("edata.rmNumber", "")
 
+  def orgName: String = readOrDefault[String]("edata.orgName", "")
+  def country: String = readOrDefault[String]("edata.country", "")
+  def state: String = readOrDefault[String]("edata.state", "")
+  def district: String = readOrDefault[String]("edata.districtgit", "")
+
 }

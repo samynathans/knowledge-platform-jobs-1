@@ -180,6 +180,27 @@ trait IssueCertificateHelper {
         val profileDetails : Map[String, AnyRef] = userDetails.getOrElse("profileDetails", "").asInstanceOf[Map[String, AnyRef]]
         val profileReq : Map[String, AnyRef] = profileDetails.getOrElse("profileReq", "").asInstanceOf[Map[String, AnyRef]]
         val personalDetails : Map[String, AnyRef] = profileReq.getOrElse("personalDetails", "").asInstanceOf[Map[String, AnyRef]]
+        val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
+        var orgName: String = ""
+        if (!professionalDetails.isEmpty) {
+            val organizationDetails: Option[Map[String, AnyRef]] = professionalDetails.lift(0)
+            if (!organizationDetails.isEmpty) {
+                orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String]).getOrElse("")
+            }
+        }
+        var address = Array[String]()
+        var country: String = ""
+        var state: String = ""
+        var district: String = ""
+        val postalAddress = Option(personalDetails.getOrElse("postalAddress", "").asInstanceOf[String]).getOrElse("")
+        if(!postalAddress.isBlank) {
+            address = postalAddress.split(", ")
+            if (!address.isEmpty) {
+                country = address(0)
+                state = address(1)
+                district = address(2)
+            }
+        }
         val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
         val eData = Map[String, AnyRef] (
             "issuedDate" -> dateFormatter.format(enrolledUser.issuedOn),
@@ -197,6 +218,10 @@ trait IssueCertificateHelper {
             "related" ->  Map[String, AnyRef]("batchId" -> event.batchId, "courseId" -> event.courseId, "type" -> certName),
             "name" -> certName,
             "rmNumber" -> regNurseRegMidwifeNumber,
+            "orgName" -> orgName,
+            "country" -> country,
+            "state" -> state,
+            "district" -> district,
             "tag" -> event.batchId
         )
 

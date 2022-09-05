@@ -200,13 +200,17 @@ trait IssueCertificateHelper {
         if(!postalAddress.isBlank) {
             logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
-            if (!address.isEmpty) {
+            if (!address.isEmpty && address.size == 3) {
                 country = address(0)
                 state = address(1)
                 district = address(2)
                 logger.info(s"country :: ${country} ")
                 logger.info(s"state :: ${state} ")
                 logger.info(s"district :: ${district} ")
+            }
+            else if (!address.isEmpty && address.size == 1){
+                country = address(0)
+                logger.info(s"country :: ${country} ")
             }
         }
         val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "[NA]").asInstanceOf[String]).getOrElse("[NA]")

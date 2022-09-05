@@ -185,7 +185,7 @@ trait IssueCertificateHelper {
         logger.info(s"professionalDetails :: ${professionalDetails} ")
         var orgName: Option[String] = None
         if (!professionalDetails.isEmpty) {
-            val organizationDetails: Option[Map[String, AnyRef]] = professionalDetails.lift(0)
+            val organizationDetails: Map[String, AnyRef] = professionalDetails.lift(0).asInstanceOf[Map[String, AnyRef]]
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
                 orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String])

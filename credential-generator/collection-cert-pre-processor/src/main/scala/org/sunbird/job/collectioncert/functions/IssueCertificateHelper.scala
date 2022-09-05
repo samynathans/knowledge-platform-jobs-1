@@ -3,6 +3,7 @@ package org.sunbird.job.collectioncert.functions
 import java.text.SimpleDateFormat
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.driver.core.{Row, TypeTokens}
+import com.twitter.util.Config.intoOption
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.sunbird.job.Metrics
@@ -169,6 +170,16 @@ trait IssueCertificateHelper {
         }
     }
 
+    def extract(m: collection.Map[String, AnyRef], key: String): Option[String] = {
+        if (m.isDefinedAt(key)) Some(m(key).toString)
+        else {
+            val res = m.values
+              .collect { case ma: Map[String, AnyRef] => extract(ma, key) }
+              .dropWhile(_.isEmpty)
+            if (res.isEmpty) None else res.head
+        }
+    }
+
     def generateCertificateEvent(event: Event, template: Map[String, String], userDetails: Map[String, AnyRef], enrolledUser: EnrolledUser, certName: String)(metrics:Metrics, config:CollectionCertPreProcessorConfig, cache:DataCache, httpUtil: HttpUtil) = {
         logger.info(s"generateCertificateEvent called ")
         val firstName = Option(userDetails.getOrElse("firstName", "").asInstanceOf[String]).getOrElse("")
@@ -183,12 +194,12 @@ trait IssueCertificateHelper {
         val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
         logger.info(s"personalDetails :: ${personalDetails} ")
         logger.info(s"professionalDetails :: ${professionalDetails} ")
-        var orgName: Option[String] = None
+        var orgName: AnyRef = None
         if (!professionalDetails.isEmpty) {
-            val organizationDetails: Map[String, AnyRef] = professionalDetails.lift(0).asInstanceOf[Map[String, AnyRef]]
+            val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
-                orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String])
+                orgName = organizationDetails.getOrElse("name", "").asInstanceOf[String]
                 logger.info(s"orgName :: ${orgName} ")
             }
         }

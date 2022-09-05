@@ -181,11 +181,15 @@ trait IssueCertificateHelper {
         val profileReq : Map[String, AnyRef] = profileDetails.getOrElse("profileReq", "").asInstanceOf[Map[String, AnyRef]]
         val personalDetails : Map[String, AnyRef] = profileReq.getOrElse("personalDetails", "").asInstanceOf[Map[String, AnyRef]]
         val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
-        var orgName = None: Option[String]
+        logger.info(s"personalDetails :: ${personalDetails} ")
+        logger.info(s"professionalDetails :: ${professionalDetails} ")
+        var orgName: String = ""
         if (!professionalDetails.isEmpty) {
             val organizationDetails: Option[Map[String, AnyRef]] = professionalDetails.lift(0)
+            logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
-                orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String])
+                orgName = Option(organizationDetails.getOrElse("name", "").asInstanceOf[String]).getOrElse("")
+                logger.info(s"orgName :: ${orgName} ")
             }
         }
         var address = Array[String]()
@@ -194,11 +198,15 @@ trait IssueCertificateHelper {
         var district: String = ""
         val postalAddress = Option(personalDetails.getOrElse("postalAddress", "").asInstanceOf[String]).getOrElse("")
         if(!postalAddress.isBlank) {
+            logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
             if (!address.isEmpty) {
                 country = address(0)
                 state = address(1)
                 district = address(2)
+                logger.info(s"country :: ${country} ")
+                logger.info(s"state :: ${state} ")
+                logger.info(s"district :: ${district} ")
             }
         }
         val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "[NA]").asInstanceOf[String]).getOrElse("[NA]")

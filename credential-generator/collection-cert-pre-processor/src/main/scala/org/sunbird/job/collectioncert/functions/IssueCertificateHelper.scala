@@ -199,22 +199,22 @@ trait IssueCertificateHelper {
             val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
-                orgName = organizationDetails.getOrElse("name", " ").asInstanceOf[String]
+                orgName = organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]
                 logger.info(s"orgName :: ${orgName} ")
             }
         }
         var address = Array[String]()
-        var country: String = " "
-        var state: String = " "
-        var district: String = " "
+        var country: String = ""
+        var state: String = ""
+        var district: String = ""
         val postalAddress = Option(personalDetails.getOrElse("postalAddress", "").asInstanceOf[String]).getOrElse("")
         if(!postalAddress.isBlank) {
             logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
             if (!address.isEmpty) {
-                country = address(0).getOrElse(" ")
-                state = address(1).getOrElse(" ")
-                district = address(2).getOrElse(" ")
+                country = address(0).getOrElse("[NA]")
+                state = address(1).getOrElse("[NA]")
+                district = address(2).getOrElse("[NA]")
                 logger.info(s"country :: ${country} ")
                 logger.info(s"state :: ${state} ")
                 logger.info(s"district :: ${district} ")

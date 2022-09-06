@@ -199,29 +199,25 @@ trait IssueCertificateHelper {
             val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
-                orgName = organizationDetails.getOrElse("name", "").asInstanceOf[String]
+                orgName = organizationDetails.getOrElse("name", " ").asInstanceOf[String]
                 logger.info(s"orgName :: ${orgName} ")
             }
         }
         var address = Array[String]()
-        var country: String = ""
-        var state: String = ""
-        var district: String = ""
+        var country: String = " "
+        var state: String = " "
+        var district: String = " "
         val postalAddress = Option(personalDetails.getOrElse("postalAddress", "").asInstanceOf[String]).getOrElse("")
         if(!postalAddress.isBlank) {
             logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
-            if (!address.isEmpty && address.size == 3) {
-                country = address(0)
-                state = address(1)
-                district = address(2)
+            if (!address.isEmpty) {
+                country = address(0).getOrElse(" ")
+                state = address(1).getOrElse(" ")
+                district = address(2).getOrElse(" ")
                 logger.info(s"country :: ${country} ")
                 logger.info(s"state :: ${state} ")
                 logger.info(s"district :: ${district} ")
-            }
-            else if (!address.isEmpty && address.size == 1){
-                country = address(0)
-                logger.info(s"country :: ${country} ")
             }
         }
         val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "[NA]").asInstanceOf[String]).getOrElse("[NA]")

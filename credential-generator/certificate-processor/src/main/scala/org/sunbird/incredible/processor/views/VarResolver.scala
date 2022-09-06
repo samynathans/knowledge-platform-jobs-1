@@ -85,6 +85,11 @@ class VarResolver(certificateExtension: CertificateExtension) {
         put(JsonKeys.EXPIRY_DATE, urlEncode(getExpiryDate))
         put(JsonKeys.ISSUER_NAME, urlEncode(getIssuerName))
         put(JsonKeys.RM_NUMBER, urlEncode(getRmNumber))
+        put(JsonKeys.ORG_NAME, urlEncode(getOrgName))
+        put(JsonKeys.COUNTRY, urlEncode(getCountry))
+        put(JsonKeys.STATE, urlEncode(getState))
+        put(JsonKeys.DISTRICT, urlEncode(getDistrict))
+
       }
     }
     metaData
@@ -98,5 +103,9 @@ class VarResolver(certificateExtension: CertificateExtension) {
   }
 
   def getRmNumber: String = certificateExtension.rmNumber.get
+  def getOrgName: String = certificateExtension.orgName.get
+  def getCountry: String = certificateExtension.country.get
+  def getState: String = certificateExtension.state.get
+  def getDistrict: String = certificateExtension.district.get
 
 }

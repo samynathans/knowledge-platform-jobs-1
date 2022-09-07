@@ -197,7 +197,7 @@ trait IssueCertificateHelper {
         var orgName: String = "[NA]"
         logger.info(s"orgName :: ${orgName} ")
         if (!professionalDetails.isEmpty) {
-            val organizationDetails: Map[String, AnyRef] = professionalDetails.head
+            val organizationDetails: Option[Map[String, AnyRef]] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
                 orgName = Option(organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
@@ -213,9 +213,9 @@ trait IssueCertificateHelper {
             logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
             if (!address.isEmpty && !address.equals("[NA]")) {
-                country = address(0).getOrElse("[NA]")
-                state = address(1).getOrElse("[NA]")
-                district = address(2).getOrElse("[NA]")
+                country = address.lift(0).getOrElse("[NA]")
+                state = address.lift(1).getOrElse("[NA]")
+                district = address.lift(2).getOrElse("[NA]")
                 logger.info(s"country :: ${country} ")
                 logger.info(s"state :: ${state} ")
                 logger.info(s"district :: ${district} ")

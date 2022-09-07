@@ -201,6 +201,8 @@ trait IssueCertificateHelper {
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
                 orgName = Option(organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
+                if(orgName.isBlank)
+                    orgName = "[NA]"
                 logger.info(s"orgName :: ${orgName} ")
             }
         }

@@ -204,7 +204,7 @@ trait IssueCertificateHelper {
                 logger.info(s"orgName :: ${orgName} ")
             }
         }
-        var address = Array[String]
+        var address = Array[String]()
         var country: String = "[NA]"
         var state: String = "[NA]"
         var district: String = "[NA]"

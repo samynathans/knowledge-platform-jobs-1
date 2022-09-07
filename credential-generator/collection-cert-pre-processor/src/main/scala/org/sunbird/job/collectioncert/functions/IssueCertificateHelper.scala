@@ -197,14 +197,14 @@ trait IssueCertificateHelper {
         var orgName: String = "[NA]"
         logger.info(s"orgName :: ${orgName} ")
         if (!professionalDetails.isEmpty) {
-            val organizationDetails: Option[Map[String, AnyRef]] = professionalDetails.head
+            val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
                 orgName = Option(organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
                 logger.info(s"orgName :: ${orgName} ")
             }
         }
-        var address = Array[String]()
+        var address = Array[String]
         var country: String = "[NA]"
         var state: String = "[NA]"
         var district: String = "[NA]"

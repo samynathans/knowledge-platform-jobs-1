@@ -194,7 +194,8 @@ trait IssueCertificateHelper {
         val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
         logger.info(s"personalDetails :: ${personalDetails} ")
         logger.info(s"professionalDetails :: ${professionalDetails} ")
-        var orgName: String = ""
+        var orgName: String = "[NA]"
+        logger.info(s"orgName :: ${orgName} ")
         if (!professionalDetails.isEmpty) {
             val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
@@ -211,7 +212,7 @@ trait IssueCertificateHelper {
         if(!postalAddress.isBlank) {
             logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
-            if (!address.isEmpty) {
+            if (!address.isEmpty && !address.equals("[NA]")) {
                 country = address(0).getOrElse("[NA]")
                 state = address(1).getOrElse("[NA]")
                 district = address(2).getOrElse("[NA]")

@@ -194,27 +194,27 @@ trait IssueCertificateHelper {
         val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
         logger.info(s"personalDetails :: ${personalDetails} ")
         logger.info(s"professionalDetails :: ${professionalDetails} ")
-        var orgName: String = ""
+        var orgName: String = "[NA]"
         if (!professionalDetails.isEmpty) {
             val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
-                orgName = organizationDetails.getOrElse("name", " ").asInstanceOf[String]
+                orgName = organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]
                 logger.info(s"orgName :: ${orgName} ")
             }
         }
         var address = Array[String]()
-        var country: String = ""
-        var state: String = ""
-        var district: String = ""
-        val postalAddress = Option(personalDetails.getOrElse("postalAddress", "").asInstanceOf[String]).getOrElse("")
+        var country: String = "[NA]"
+        var state: String = "[NA]"
+        var district: String = "[NA]"
+        val postalAddress = Option(personalDetails.getOrElse("postalAddress", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
         if(!postalAddress.isBlank) {
             logger.info(s"postalAddress :: ${postalAddress} ")
             address = postalAddress.split(", ")
             if (!address.isEmpty) {
-                country = address(0).getOrElse(" ")
-                state = address(1).getOrElse(" ")
-                district = address(2).getOrElse(" ")
+                country = address(0).getOrElse("[NA]")
+                state = address(1).getOrElse("[NA]")
+                district = address(2).getOrElse("[NA]")
                 logger.info(s"country :: ${country} ")
                 logger.info(s"state :: ${state} ")
                 logger.info(s"district :: ${district} ")

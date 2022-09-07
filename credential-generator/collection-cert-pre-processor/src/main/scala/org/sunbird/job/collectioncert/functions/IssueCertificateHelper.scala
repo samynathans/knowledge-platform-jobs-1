@@ -194,12 +194,12 @@ trait IssueCertificateHelper {
         val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
         logger.info(s"personalDetails :: ${personalDetails} ")
         logger.info(s"professionalDetails :: ${professionalDetails} ")
-        var orgName: String = "[NA]"
+        var orgName: String = ""
         if (!professionalDetails.isEmpty) {
             val organizationDetails: Map[String, AnyRef] = professionalDetails.head
             logger.info(s"organizationDetails :: ${organizationDetails} ")
             if (!organizationDetails.isEmpty) {
-                orgName = organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]
+                orgName = Option(organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
                 logger.info(s"orgName :: ${orgName} ")
             }
         }

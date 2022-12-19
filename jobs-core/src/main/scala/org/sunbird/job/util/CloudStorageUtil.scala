@@ -9,7 +9,7 @@ import java.io.File
 
 class CloudStorageUtil(config: BaseJobConfig) extends Serializable {
 
-  val cloudStorageType: String = config.getString("cloud_storage_type", "azure")
+  val cloudStorageType: String = config.getString("cloud_storage_type", "aws")
   var storageService: BaseStorageService = null
   val container: String = getContainerName
   val cephs3StorageContainer: String = config.getString("cephs3_storage_container", "")
@@ -25,6 +25,11 @@ class CloudStorageUtil(config: BaseJobConfig) extends Serializable {
         val awsStorageKey = config.getString("aws_storage_key", "")
         val awsStorageSecret = config.getString("aws_storage_secret", "")
         storageService = StorageServiceFactory.getStorageService(StorageConfig(cloudStorageType, awsStorageKey, awsStorageSecret))
+        println("****************** aws checkpoint ********************************************")
+        println("cloud_storage_type: "+cloudStorageType)
+        println("aws_storage_key: "+awsStorageKey)
+        println("aws_storage_secret: "+awsStorageSecret)
+        println("storageService: "+storageService)
       } else if (StringUtils.equalsIgnoreCase(cloudStorageType, "cephs3")) {
         val storageKey = config.getString("cephs3_storage_key", "");
         val storageSecret = config.getString("cephs3_storage_secret", "");

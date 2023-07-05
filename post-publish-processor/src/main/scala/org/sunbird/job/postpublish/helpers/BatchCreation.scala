@@ -10,12 +10,14 @@ import org.sunbird.job.util.{CassandraUtil, HttpUtil, JSONUtil, Neo4JUtil}
 
 import java.util
 import scala.collection.JavaConverters._
+import java.time.LocalDate
 
 trait BatchCreation {
 
   private[this] val logger = LoggerFactory.getLogger(classOf[BatchCreation])
 
   def createBatch(eData: java.util.Map[String, AnyRef], startDate: String)(implicit config: PostPublishProcessorConfig, httpUtil: HttpUtil) = {
+    val sameDayNextYear = LocalDate.now.plusYears(10)
     val request = new java.util.HashMap[String, AnyRef]() {
       {
         val format = new SimpleDateFormat("d-M-y")

@@ -20,8 +20,6 @@ trait BatchCreation {
     val sameDayNextYear = LocalDate.now.plusYears(10)
     val request = new java.util.HashMap[String, AnyRef]() {
       {
-        val format = new SimpleDateFormat("d-M-y")
-        val sameDayNextYear = LocalDate.now.plusYears(10)
         put("request", new java.util.HashMap[String, AnyRef]() {
           {
             put("courseId", eData.get("identifier"))

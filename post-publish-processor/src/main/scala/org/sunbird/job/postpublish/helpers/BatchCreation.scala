@@ -18,6 +18,7 @@ trait BatchCreation {
 
   def createBatch(eData: java.util.Map[String, AnyRef], startDate: String)(implicit config: PostPublishProcessorConfig, httpUtil: HttpUtil) = {
     val sameDayNextYear = LocalDate.now.plusYears(10)
+    val date_day:String = sameDayNextYear.toString
     val request = new java.util.HashMap[String, AnyRef]() {
       {
         put("request", new java.util.HashMap[String, AnyRef]() {
@@ -30,8 +31,8 @@ trait BatchCreation {
               put("createdFor", eData.get("createdFor"))
             put("enrollmentType", "open")
             put("startDate", startDate)
-            put("endDate",sameDayNextYear)
-            put("enrollmentEndDate",sameDayNextYear)
+            put("endDate",date_day)
+            put("enrollmentEndDate",date_day)
           }
         })
       }

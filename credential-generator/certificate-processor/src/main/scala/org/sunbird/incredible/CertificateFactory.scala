@@ -68,6 +68,27 @@ object CertificateFactory {
       val signature: Signature = Signature(created = Instant.now.toString, creator = basePath.concat("/").concat(certModel.keyId).concat(JsonKeys.PUBLIC_KEY_URL), signatureValue = signatureValue)
       certificateExtension.signature = Option.apply(signature)
     }
+
+    if (StringUtils.isNotEmpty(certModel.rmNumber)) {
+      certificateExtension.rmNumber = Option.apply(certModel.rmNumber)
+    }
+
+    if (StringUtils.isNotEmpty(certModel.orgName)) {
+      certificateExtension.orgName = Option.apply(certModel.orgName)
+    }
+
+    if (StringUtils.isNotEmpty(certModel.country)) {
+      certificateExtension.country = Option.apply(certModel.country)
+    }
+
+    if (StringUtils.isNotEmpty(certModel.district)) {
+      certificateExtension.district = Option.apply(certModel.district)
+    }
+
+    if (StringUtils.isNotEmpty(certModel.state)) {
+      certificateExtension.state = Option.apply(certModel.state)
+    }
+
     certificateExtension
   }
 

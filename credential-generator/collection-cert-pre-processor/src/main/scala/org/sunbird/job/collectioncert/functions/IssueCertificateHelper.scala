@@ -3,6 +3,7 @@ package org.sunbird.job.collectioncert.functions
 import java.text.SimpleDateFormat
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.driver.core.{Row, TypeTokens}
+import com.twitter.util.Config.intoOption
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.sunbird.job.Metrics
@@ -18,18 +19,23 @@ trait IssueCertificateHelper {
 
 
     def issueCertificate(event:Event, template: Map[String, String])(cassandraUtil: CassandraUtil, cache:DataCache, contentCache: DataCache, metrics: Metrics, config: CollectionCertPreProcessorConfig, httpUtil: HttpUtil): String = {
+        logger.info(s"inside issueCertificate ")
         //validCriteria
         logger.info("issueCertificate i/p event =>"+event)
         val criteria = validateTemplate(template, event.batchId)(config)
+        logger.info(s"criteria :: ${criteria} ")
         //validateEnrolmentCriteria
         val certName = template.getOrElse(config.name, "")
+        logger.info(s"certName :: ${certName} ")
         val additionalProps: Map[String, List[String]] = ScalaJsonUtil.deserialize[Map[String, List[String]]](template.getOrElse("additionalProps", "{}"))
         val enrolledUser: EnrolledUser = validateEnrolmentCriteria(event, criteria.getOrElse(config.enrollment, Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]], certName, additionalProps)(metrics, cassandraUtil, config)
+        logger.info(s"enrolledUser :: ${enrolledUser} ")
         //validateAssessmentCriteria
         val assessedUser = validateAssessmentCriteria(event, criteria.getOrElse(config.assessment, Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]], enrolledUser.userId, additionalProps)(metrics, cassandraUtil, contentCache, config)
+        logger.info(s"assessedUser :: ${assessedUser} ")
         //validateUserCriteria
         val userDetails = validateUser(assessedUser.userId, criteria.getOrElse(config.user, Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]], additionalProps)(metrics, config, httpUtil)
-
+        logger.info(s"userDetails :: ${userDetails} ")
         //generateCertificateEvent
         if(userDetails.nonEmpty) {
             generateCertificateEvent(event, template, userDetails, enrolledUser, assessedUser, additionalProps, certName)(metrics, config, cache, httpUtil)
@@ -185,6 +191,19 @@ trait IssueCertificateHelper {
         }
     }
 
+    def extract(m: collection.Map[String, AnyRef], key: String): Option[String] = {
+        if (m.isDefinedAt(key)) Some(m(key).toString)
+        else {
+            val res = m.values
+              .collect { case ma: Map[String, AnyRef] => extract(ma, key) }
+              .dropWhile(_.isEmpty)
+            if (res.isEmpty) None else res.head
+        }
+    }
+
+    def generateCertificateEvent(event: Event, template: Map[String, String], userDetails: Map[String, AnyRef], enrolledUser: EnrolledUser, assessedUser: AssessedUser, additionalProps: Map[String, List[String]], certName: String)(metrics:Metrics, config:CollectionCertPreProcessorConfig, cache:DataCache, httpUtil: HttpUtil) = {
+        logger.info(s"generateCertificateEvent called ")
+
     def getCourseOrganisation(courseId: String)(metrics: Metrics, config: CollectionCertPreProcessorConfig, cache: DataCache, httpUtil: HttpUtil): String = {
         val courseMetadata = cache.getWithRetry(courseId)
         var data: String = ""
@@ -202,13 +221,49 @@ trait IssueCertificateHelper {
         data        
     }
 
-    def generateCertificateEvent(event: Event, template: Map[String, String], userDetails: Map[String, AnyRef], enrolledUser: EnrolledUser, assessedUser: AssessedUser, additionalProps: Map[String, List[String]], certName: String)(metrics:Metrics, config:CollectionCertPreProcessorConfig, cache:DataCache, httpUtil: HttpUtil) = {
         val firstName = Option(userDetails.getOrElse("firstName", "").asInstanceOf[String]).getOrElse("")
         val lastName = Option(userDetails.getOrElse("lastName", "").asInstanceOf[String]).getOrElse("")
         def nullStringCheck(name:String):String = {if(StringUtils.equalsIgnoreCase("null", name)) ""  else name}
         val recipientName = nullStringCheck(firstName).concat(" ").concat(nullStringCheck(lastName)).trim
         val courseName = getCourseName(event.courseId)(metrics, config, cache, httpUtil)
         val dateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+        val profileDetails : Map[String, AnyRef] = userDetails.getOrElse("profileDetails", "").asInstanceOf[Map[String, AnyRef]]
+        val profileReq : Map[String, AnyRef] = profileDetails.getOrElse("profileReq", "").asInstanceOf[Map[String, AnyRef]]
+        val personalDetails : Map[String, AnyRef] = profileReq.getOrElse("personalDetails", "").asInstanceOf[Map[String, AnyRef]]
+        val professionalDetails : List[Map[String, AnyRef]] = profileReq.getOrElse("professionalDetails", Nil).asInstanceOf[List[Map[String, AnyRef]]]
+        logger.info(s"personalDetails :: ${personalDetails} ")
+        logger.info(s"professionalDetails :: ${professionalDetails} ")
+        var orgName: String = "[NA]"
+        logger.info(s"orgName :: ${orgName} ")
+        if (!professionalDetails.isEmpty) {
+            val organizationDetails: Map[String, AnyRef] = professionalDetails.head
+            logger.info(s"organizationDetails :: ${organizationDetails} ")
+            if (!organizationDetails.isEmpty) {
+                orgName = Option(organizationDetails.getOrElse("name", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
+                if(orgName.isBlank)
+                    orgName = "[NA]"
+                logger.info(s"orgName :: ${orgName} ")
+            }
+        }
+        var address = Array[String]()
+        var country: String = "[NA]"
+        var state: String = "[NA]"
+        var district: String = "[NA]"
+        val postalAddress = Option(personalDetails.getOrElse("postalAddress", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
+        if(!postalAddress.isBlank) {
+            logger.info(s"postalAddress :: ${postalAddress} ")
+            address = postalAddress.split(", ")
+            if (!address.isEmpty && !address.equals("[NA]")) {
+                country = address.lift(0).getOrElse("[NA]")
+                state = address.lift(1).getOrElse("[NA]")
+                district = address.lift(2).getOrElse("[NA]")
+                logger.info(s"country :: ${country} ")
+                logger.info(s"state :: ${state} ")
+                logger.info(s"district :: ${district} ")
+            }
+        }
+        val regNurseRegMidwifeNumber = Option(personalDetails.getOrElse("regNurseRegMidwifeNumber", "[NA]").asInstanceOf[String]).getOrElse("[NA]")
+
         val related = getRelatedData(event, enrolledUser, assessedUser, userDetails, additionalProps, certName, courseName)(config)
         val providerName = getCourseOrganisation(event.courseId)(metrics, config, cache, httpUtil)
         val eData = Map[String, AnyRef] (
@@ -226,6 +281,11 @@ trait IssueCertificateHelper {
             "basePath" -> config.certBasePath,
             "related" ->  related,
             "name" -> certName,
+            "rmNumber" -> regNurseRegMidwifeNumber,
+            "orgName" -> orgName,
+            "country" -> country,
+            "state" -> state,
+            "district" -> district,
             "providerName" -> providerName,
             "tag" -> event.batchId
         )

@@ -86,6 +86,11 @@ class VarResolver(certificateExtension: CertificateExtension) {
         put(JsonKeys.SIGNATORY_1_DESIGNATION, urlEncode(getSignatory1Designation))
         put(JsonKeys.EXPIRY_DATE, urlEncode(getExpiryDate))
         put(JsonKeys.ISSUER_NAME, urlEncode(getIssuerName))
+        put(JsonKeys.RM_NUMBER, urlEncode(getRmNumber))
+        put(JsonKeys.ORG_NAME, urlEncode(getOrgName))
+        put(JsonKeys.COUNTRY, urlEncode(getCountry))
+        put(JsonKeys.STATE, urlEncode(getState))
+        put(JsonKeys.DISTRICT, urlEncode(getDistrict))
         put(JsonKeys.PROVIDER_NAME, urlEncode(getProviderName))
       }
     }
@@ -98,5 +103,11 @@ class VarResolver(certificateExtension: CertificateExtension) {
     if (StringUtils.isNotEmpty(data)) URLEncoder.encode(data, "UTF-8").replace("+", "%20")
     else data
   }
+
+  def getRmNumber: String = certificateExtension.rmNumber.get
+  def getOrgName: String = certificateExtension.orgName.get
+  def getCountry: String = certificateExtension.country.get
+  def getState: String = certificateExtension.state.get
+  def getDistrict: String = certificateExtension.district.get
 
 }

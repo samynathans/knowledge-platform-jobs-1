@@ -124,5 +124,10 @@ object JsonKeys {
   val EXPIRY_DATE: String = "expiryDate"
   val ISSUER_NAME: String = "issuerName"
   val EDATA = "edata"
+  val RM_NUMBER: String = "rmNumber"
+  val ORG_NAME: String = "orgName"
+  val COUNTRY: String = "country"
+  val STATE: String = "state"
+  val DISTRICT: String = "district"
   val PROVIDER_NAME: String = "providerName"
 }

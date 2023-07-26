@@ -41,7 +41,7 @@ class CertMapper(certConfig: CertificateConfig) {
         country = certReq.country,
         district = certReq.district,
         state = certReq.state,
-        expiry = Option.apply(expiryDate)
+        expiry = Option.apply(expiryDate),
         providerName = certReq.providerName
       )
       certModel

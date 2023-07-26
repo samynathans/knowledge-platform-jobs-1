@@ -1,5 +1,6 @@
 package org.sunbird.job.postpublish.helpers
 
+import java.time.LocalDate
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import org.apache.commons.collections.{CollectionUtils, MapUtils}
 import org.apache.commons.lang3.StringUtils
@@ -9,12 +10,15 @@ import org.sunbird.job.util.{CassandraUtil, HttpUtil, JSONUtil, Neo4JUtil}
 
 import java.util
 import scala.collection.JavaConverters._
+import java.time.LocalDate
 
 trait BatchCreation {
 
   private[this] val logger = LoggerFactory.getLogger(classOf[BatchCreation])
 
   def createBatch(eData: java.util.Map[String, AnyRef], startDate: String)(implicit config: PostPublishProcessorConfig, httpUtil: HttpUtil) = {
+    val sameDayNextYear = LocalDate.now.plusYears(10)
+    val date_day:String = sameDayNextYear.toString
     val request = new java.util.HashMap[String, AnyRef]() {
       {
         put("request", new java.util.HashMap[String, AnyRef]() {
@@ -27,12 +31,18 @@ trait BatchCreation {
               put("createdFor", eData.get("createdFor"))
             put("enrollmentType", "open")
             put("startDate", startDate)
+            put("endDate",date_day)
+            put("enrollmentEndDate",date_day)
           }
         })
       }
     }
+    print(request)
     val httpRequest = JSONUtil.serialize(request)
+    print("httprequest")
+    print(httpRequest)
     val httpResponse = httpUtil.post(config.batchCreateAPIPath, httpRequest)
+    print(httpResponse)
     if (httpResponse.status == 200) {
       logger.info("Batch create success: " + httpResponse.body)
     } else {

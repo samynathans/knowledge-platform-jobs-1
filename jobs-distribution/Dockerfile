@@ -10,4 +10,6 @@ RUN tar -xvf /tmp/jobs-distribution-1.0.tar.gz -C $FLINK_HOME/lib/
 RUN cp $FLINK_HOME/opt/flink-s3-fs-presto-1.13.5.jar $FLINK_HOME/lib/
 USER root
 RUN rm -f /tmp/jobs-distribution-1.0.tar.gz
+RUN rm -f $FLINK_HOME/lib/flink-s3-fs-hadoop-1.13.5.jar
 USER flink
+
